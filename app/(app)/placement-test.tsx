@@ -1,0 +1,1 @@
+export { default } from '../../src/modules/placement-test/pages/PlacementTestPage';
