@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AppText from '../../../shared/components/AppText';
 import BottomNav from '../../../shared/components/BottomNav';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const COLORS = {
   background: '#FDFAF6',
@@ -45,7 +46,7 @@ export default function PlacementTestPage() {
         {/* Host + schedule card */}
         <View style={styles.card}>
           <View style={styles.hostRow}>
-            <View style={styles.avatarPlaceholder} />
+            <Image style={styles.avatarPlaceholder} source={require('@/assets/images/martin.jpg')} />
             <View>
               <AppText weight="bold" style={styles.hostName}>Damar Muhammad</AppText>
               <AppText style={styles.hostRole}>Host senior</AppText>
@@ -105,9 +106,16 @@ export default function PlacementTestPage() {
         </View>
 
         {/* Actions */}
-        <TouchableOpacity style={styles.joinButton} activeOpacity={0.85}>
-          <Ionicons name="videocam" size={18} color={COLORS.white} />
-          <AppText weight="bold" style={styles.joinButtonText}>Join Test Session</AppText>
+        <TouchableOpacity activeOpacity={0.85} style={{ marginTop: 24 }}>
+            <LinearGradient
+              colors={[COLORS.gold, COLORS.darkBrown]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.joinButton}
+            >
+              <Ionicons name="videocam" size={18} color={COLORS.white} />
+              <AppText weight="bold" style={styles.joinButtonText}>Join Test Session</AppText>
+            </LinearGradient>
         </TouchableOpacity>
         <TouchableOpacity style={styles.rescheduleButton} activeOpacity={0.7}>
           <AppText weight="bold" style={styles.rescheduleText}>Reschedule</AppText>
@@ -126,6 +134,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 8,
+    marginBottom: 10,
     gap: 12,
   },
   backButton: {
@@ -171,14 +180,17 @@ const styles = StyleSheet.create({
   timelineDesc: { fontSize: 12, color: COLORS.placeholder, marginTop: 2 },
 
   joinButton: {
-    flexDirection: 'row', gap: 10,
-    backgroundColor: COLORS.gold, borderRadius: 30,
-    paddingVertical: 16, alignItems: 'center', justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 15,
+    borderRadius: 30,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   joinButtonText: { color: COLORS.white, fontSize: 15 },
   rescheduleButton: {
     borderWidth: 1.5, borderColor: '#EAD9BE', borderRadius: 30,
-    paddingVertical: 16, alignItems: 'center',
+    paddingVertical: 10, alignItems: 'center',
   },
   rescheduleText: { color: '#D8B98A', fontSize: 15 },
 });

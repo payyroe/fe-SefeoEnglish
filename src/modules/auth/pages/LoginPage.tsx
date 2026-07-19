@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { Image } from 'react-native';
 import AppText from '@/src/shared/components/AppText'; // sesuain path relatif ke file lu
 
 // Warna utama sesuai desain SEFEO
@@ -25,6 +26,7 @@ const COLORS = {
   white: '#FFFFFF',
   error: '#E5484D',
   placeholder: '#B3A491',
+  black: '#000000',
 } as const;
 
 type FormErrors = {
@@ -71,7 +73,11 @@ export default function LoginPage() {
         >
           {/* Logo */}
           <View style={styles.logoBox}>
-            <AppText weight="bold" style={styles.logoText}>SEFEO</AppText>
+          <Image
+            source={require('@/assets/images/Sefeo.jpeg')}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
           </View>
 
           {/* Heading */}
@@ -189,11 +195,15 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 24,
-    backgroundColor: COLORS.bgBlack,
+    backgroundColor: COLORS.black,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
     marginBottom: 40,
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
   },
   logoText: {
     color: COLORS.gold,
@@ -279,7 +289,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     borderRadius: 30,
-    paddingVertical: 16,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -305,4 +315,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.gold,
   },
+
 });
