@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -87,7 +87,11 @@ export default function RecentHistoryPage() {
           return (
             <View key={index} style={styles.card}>
               <View style={styles.cardTopRow}>
-                <View style={styles.avatarSmall} />
+                {/* <View style={styles.avatarSmall} /> */}
+                <Image
+                source={require('@/assets/images/image.png')}
+                style={styles.avatarSmall}
+              />
                 <View style={{ flex: 1 }}>
                   <AppText weight="bold" style={styles.cardTitle}>{item.title}</AppText>
                   <AppText style={styles.cardHost}>Host: {item.host}</AppText>

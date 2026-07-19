@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AppText from '../../../shared/components/AppText';
 import BottomNav from '../../../shared/components/BottomNav';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 
 const COLORS = {
   background: '#FDFAF6',
@@ -74,7 +75,7 @@ export default function SessionPage() {
 
         <View style={styles.rowBetween}>
           <AppText weight="bold" style={styles.sectionTitle}>Recent History</AppText>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/(app)/recent-history')}>
             <AppText weight="bold" style={styles.viewAll}>View All</AppText>
           </TouchableOpacity>
         </View>
