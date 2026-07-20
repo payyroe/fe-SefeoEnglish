@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AppText from '../../../shared/components/AppText';
 import BottomNav from '../../../shared/components/BottomNav';
-import { useUserRole } from '../../../shared/context/UserRoleContext';
 
 const COLORS = {
   background: '#FDFAF6',
@@ -73,7 +72,9 @@ const COMMUNITY_SESSIONS: {
 
 export default function SessionPage() {
   const router = useRouter();
-  const { membershipTier } = useUserRole();
+
+  // TODO: ganti dengan data user asli dari API (membership tier dari backend)
+  const membershipTier: 'regular' | 'vip' = 'regular';
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
 
@@ -122,7 +123,10 @@ export default function SessionPage() {
               </View>
               <AppText weight="bold" style={styles.historyCardTitle}>{item.title}</AppText>
               <View style={styles.hostRow}>
-                <View style={styles.avatarTiny} />
+              <Image
+                source={require('@/assets/images/image.png')}
+                style={styles.avatarTiny}
+              />
                 <AppText style={styles.hostText}>Host : {item.host}</AppText>
               </View>
             </View>
@@ -211,7 +215,10 @@ export default function SessionPage() {
             {AVAILABLE_SESSIONS.map((session, index) => (
               <View key={index} style={styles.sessionCard}>
                 <View style={styles.sessionCardHeader}>
-                  <View style={styles.avatarPlaceholder} />
+                <Image
+                source={require('@/assets/images/image.png')}
+                style={styles.avatarPlaceholder}
+              />
                   <View style={{ flex: 1 }}>
                     <AppText weight="bold" style={styles.hostName}>{session.name}</AppText>
                     <AppText style={styles.hostRole}>Host</AppText>

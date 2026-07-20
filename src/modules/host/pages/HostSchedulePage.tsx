@@ -163,7 +163,7 @@ export default function HostSchedulePage() {
         ))}
       </ScrollView>
 
-      <BottomNav />
+      <BottomNav role="host" />
     </SafeAreaView>
   );
 }

@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image } from 'react-native';
 import AppText from '@/src/shared/components/AppText'; // sesuain path relatif ke file lu
-import { useUserRole } from '@/src/shared/context/UserRoleContext'; // sesuain path relatif ke file lu
 
 // Warna utama sesuai desain SEFEO
 const COLORS = {
@@ -38,7 +37,6 @@ type FormErrors = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setRole } = useUserRole();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -64,9 +62,11 @@ export default function LoginPage() {
 
     console.log('Login dengan:', { username, password, loginAs });
 
-    // TODO: ganti dengan hasil role dari response API login yang sebenarnya
-    setRole(loginAs);
-
+    // TODO: nanti diganti manggil API login beneran.
+    // Response API idealnya udah ngasih tau role user (member/host) dan
+    // membership tier (regular/vip), lalu masing-masing halaman
+    // (Home, Session, Profile, dst) tinggal fetch data user itu sendiri
+    // buat nentuin tampilan & BottomNav-nya — bukan disimpen di context terpisah.
     router.replace(loginAs === 'host' ? '/(host)' : '/(app)');
   };
 

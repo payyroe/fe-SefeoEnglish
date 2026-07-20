@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +9,6 @@ import HomeHeader from '../../../shared/components/HomeHeader';
 import BottomNav from '../../../shared/components/BottomNav';
 import VipBadge from '../../../shared/components/VipBadge';
 import ProgressBar from '../../../shared/components/ProgressBar';
-import { useUserRole } from '../../../shared/context/UserRoleContext';
 
 const COLORS = {
   background: '#FDFAF6',
@@ -43,12 +42,9 @@ const REGULAR_HISTORY = [
 
 export default function HomePage() {
   const router = useRouter();
-  const { membershipTier } = useUserRole();
 
-  // TODO: ganti dengan data asli dari API
-  const [membershipStatus] = useState<MembershipStatus>(
-    membershipTier === 'vip' ? 'vip' : 'regular'
-  );
+  // TODO: ganti dengan data user asli dari API (membership tier dari backend)
+  const [membershipStatus] = useState<MembershipStatus>('regular');
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -99,7 +95,10 @@ export default function HomePage() {
               </View>
 
               <View style={styles.sessionInfoRow}>
-                <View style={styles.avatarSmallPlaceholder} />
+              <Image
+                source={require('@/assets/images/image.png')}
+                style={styles.avatarSmallPlaceholder}
+              />
                 <View>
                   <AppText weight="bold" style={styles.sessionTitle}>Placement test</AppText>
                   <AppText style={styles.sessionSubtitle}>with Instrutor Damar</AppText>
@@ -209,7 +208,10 @@ export default function HomePage() {
               </View>
 
               <View style={styles.sessionInfoRow}>
-                <View style={styles.avatarSmallPlaceholder} />
+              <Image
+                source={require('@/assets/images/image.png')}
+                style={styles.avatarSmallPlaceholder}
+              />
                 <View>
                   <AppText weight="bold" style={styles.sessionTitle}>{REGULAR_UPCOMING_SESSION.title}</AppText>
                   <AppText style={styles.sessionSubtitle}>with Instrutor {REGULAR_UPCOMING_SESSION.hostName}</AppText>

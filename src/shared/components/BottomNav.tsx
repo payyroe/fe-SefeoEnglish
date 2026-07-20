@@ -3,7 +3,6 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
 import AppText from './AppText';
-import { useUserRole } from '@/src/shared/context/UserRoleContext';
 
 const COLORS = {
   darkBrown: '#543A14',
@@ -25,10 +24,16 @@ const HOST_TABS = [
   { key: 'profile', label: 'Profile', icon: 'person-outline', path: '/(app)/profile' },
 ] as const;
 
-export default function BottomNav() {
+type Props = {
+  // TODO: nanti kalau udah connect ke backend, nilai ini idealnya diambil
+  // dari data user yang login (misal dari hasil endpoint /me atau auth session),
+  // bukan di-passing manual per halaman.
+  role?: 'member' | 'host';
+};
+
+export default function BottomNav({ role = 'member' }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const { role } = useUserRole();
 
   const TABS = role === 'host' ? HOST_TABS : MEMBER_TABS;
   const homePath = role === 'host' ? '/(host)' : '/(app)';

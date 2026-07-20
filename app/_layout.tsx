@@ -20,10 +20,8 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <UserRoleProvider>
       <SafeAreaProvider>
         <Stack screenOptions={{ headerShown: false }} />
       </SafeAreaProvider>
-    </UserRoleProvider>
   );
 }

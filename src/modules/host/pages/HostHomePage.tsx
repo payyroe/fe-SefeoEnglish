@@ -53,9 +53,9 @@ export default function HostHomePage() {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
         <Image
-            source={require('../../../../assets/images/martin.jpg')}
-            style={styles.avatar}
-          />
+                source={require('@/assets/images/martin.jpg')}
+                style={styles.avatar}
+              />
           <View>
             <AppText style={styles.greeting}>Good Morning</AppText>
             <View style={styles.nameRow}>
@@ -115,9 +115,9 @@ export default function HostHomePage() {
                 onPress={() => router.push(`/(host)/evaluation/${room.id}`)}
               >
                 <Image
-            source={require('../../../../assets/images/image.png')}
-            style={styles.avatarPlaceholderSmall}
-          />
+                source={require('@/assets/images/image.png')}
+                style={styles.avatarPlaceholderSmall}
+              />
                 <View style={{ flex: 1 }}>
                   <AppText weight="bold" style={styles.roomTitle}>{room.title}</AppText>
                   <AppText style={styles.roomSubtitle}>{room.subtitle}</AppText>
@@ -185,9 +185,9 @@ export default function HostHomePage() {
           {TEACHING_HISTORY.map((item, index) => (
             <View key={index} style={styles.historyRowCard}>
               <Image
-            source={require('../../../../assets/images/image.png')}
-            style={styles.avatarPlaceholderSmall}
-          />
+                source={require('@/assets/images/image.png')}
+                style={styles.avatarPlaceholderSmall}
+              />
               <View style={{ flex: 1 }}>
                 <AppText weight="bold" style={styles.historyRowTitle}>{item.title}</AppText>
                 <AppText style={styles.historyRowDate}>{item.date}</AppText>
@@ -201,7 +201,7 @@ export default function HostHomePage() {
         </View>
       </ScrollView>
 
-      <BottomNav />
+      <BottomNav role="host" />
     </SafeAreaView>
   );
 }

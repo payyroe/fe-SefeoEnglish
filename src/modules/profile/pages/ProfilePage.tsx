@@ -6,7 +6,6 @@ import { useRouter } from 'expo-router';
 import AppText from '../../../shared/components/AppText';
 import BottomNav from '../../../shared/components/BottomNav';
 import VipBadge from '../../../shared/components/VipBadge';
-import { useUserRole } from '../../../shared/context/UserRoleContext';
 
 const COLORS = {
   background: '#FDFAF6',
@@ -30,7 +29,10 @@ const MENU_GROUPS = [
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { role, membershipTier } = useUserRole();
+
+  // TODO: ganti dengan data user asli dari API/auth session
+  const role: 'member' | 'host' = 'member';
+  const membershipTier: 'regular' | 'vip' = 'vip';
 
   const handleLogout = () => {
     Alert.alert('Log out', 'Are you sure you want to log out?', [
@@ -83,7 +85,7 @@ export default function ProfilePage() {
         </TouchableOpacity>
       </View>
 
-      <BottomNav />
+      <BottomNav role={role} />
     </SafeAreaView>
   );
 }
