@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import HomeHeader from '../../../shared/components/HomeHeader';
 import BottomNav from '../../../shared/components/BottomNav';
 import VipBadge from '../../../shared/components/VipBadge';
 import ProgressBar from '../../../shared/components/ProgressBar';
+import { useUserRole } from '../../../shared/context/UserRoleContext';
 
 const COLORS = {
   background: '#FDFAF6',
@@ -19,17 +20,35 @@ const COLORS = {
   white: '#FFFFFF',
   error: '#E5484D',
   errorBg: '#FCE4E4',
-  placeholder: '#00000',
+  placeholder: '#B3A491',
   border: '#EFE7DA',
 };
 
-type MembershipStatus = 'none' | 'scheduled' | 'vip';
+// 'none'      -> belum placement test
+// 'scheduled' -> udah jadwal placement test, lagi milih paket (Reguler/VIP)
+// 'regular'   -> udah member reguler (steady state, belum upgrade VIP)
+// 'vip'       -> udah member VIP
+type MembershipStatus = 'none' | 'scheduled' | 'regular' | 'vip';
+
+const REGULAR_UPCOMING_SESSION = {
+  title: 'Conversational Fluency',
+  hostName: 'Damar',
+};
+
+const REGULAR_HISTORY = [
+  { title: 'Business English Basics', subtitle: 'with Instructor Sarah • Oct 24' },
+  { title: 'Grammar Workshop', subtitle: 'with Instructor Damar • Oct 22' },
+  { title: 'Grammar Workshop', subtitle: 'with Instructor Damar • Oct 22' },
+];
 
 export default function HomePage() {
   const router = useRouter();
+  const { membershipTier } = useUserRole();
 
   // TODO: ganti dengan data asli dari API
-  const [membershipStatus] = useState<MembershipStatus>('vip');
+  const [membershipStatus] = useState<MembershipStatus>(
+    membershipTier === 'vip' ? 'vip' : 'regular'
+  );
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -80,10 +99,7 @@ export default function HomePage() {
               </View>
 
               <View style={styles.sessionInfoRow}>
-              <Image
-                source={require('@/assets/images/image.png')}
-                style={styles.avatarSmallPlaceholder}
-              />
+                <View style={styles.avatarSmallPlaceholder} />
                 <View>
                   <AppText weight="bold" style={styles.sessionTitle}>Placement test</AppText>
                   <AppText style={styles.sessionSubtitle}>with Instrutor Damar</AppText>
@@ -150,6 +166,91 @@ export default function HomePage() {
           </>
         )}
 
+        {membershipStatus === 'regular' && (
+          <>
+            {/* Account tier card */}
+            <View style={styles.tierCard}>
+              <View style={styles.tierHeaderRow}>
+                <AppText style={styles.tierLabel}>ACCOUNT TIER</AppText>
+                <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/(app)/payment')}>
+                  <LinearGradient
+                    colors={[COLORS.darkBrown, '#8A5A2B']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.joinVipButton}
+                  >
+                    <AppText weight="bold" style={styles.joinVipButtonText}>Join VIP</AppText>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.tierTitleRow}>
+                <AppText weight="bold" style={styles.tierTitle}>Regular Member</AppText>
+                <TouchableOpacity hitSlop={8}>
+                  <Ionicons name="information-circle-outline" size={18} color={COLORS.placeholder} />
+                </TouchableOpacity>
+              </View>
+
+              <AppText style={styles.tierDesc}>
+                Unlock direct session booking and exclusive curriculum materials by upgrading to VIP status.
+              </AppText>
+            </View>
+
+            {/* Upcoming session */}
+            <View style={styles.sessionCard}>
+              <View style={styles.sessionHeader}>
+                <View style={styles.sessionHeaderLeft}>
+                  <Ionicons name="calendar-outline" size={18} color={COLORS.darkBrown} />
+                  <AppText weight="bold" style={styles.sessionHeaderTitle}>Upcoming session</AppText>
+                </View>
+                <View style={styles.timeBadge}>
+                  <AppText style={styles.timeBadgeText}>In 45 mins</AppText>
+                </View>
+              </View>
+
+              <View style={styles.sessionInfoRow}>
+                <View style={styles.avatarSmallPlaceholder} />
+                <View>
+                  <AppText weight="bold" style={styles.sessionTitle}>{REGULAR_UPCOMING_SESSION.title}</AppText>
+                  <AppText style={styles.sessionSubtitle}>with Instrutor {REGULAR_UPCOMING_SESSION.hostName}</AppText>
+                </View>
+              </View>
+
+              <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/(app)/session')}>
+                <LinearGradient
+                  colors={[COLORS.gold, COLORS.darkBrown]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.primaryButton}
+                >
+                  <AppText weight="bold" style={styles.primaryButtonText}>Join Room</AppText>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+
+            {/* Recent History - vertical list style (bukan horizontal card) */}
+            <View style={styles.whiteBorderCard}>
+              <AppText weight="bold" style={styles.sectionTitle}>Recent History</AppText>
+              {REGULAR_HISTORY.map((item, index, arr) => (
+                <View key={index}>
+                  <TouchableOpacity
+                    style={styles.historyRow}
+                    activeOpacity={0.7}
+                    onPress={() => router.push('/(app)/recent-history')}
+                  >
+                    <View>
+                      <AppText weight="bold" style={styles.historyTitle}>{item.title}</AppText>
+                      <AppText style={styles.historySubtitle}>{item.subtitle}</AppText>
+                    </View>
+                    <Ionicons name="chevron-forward" size={18} color={COLORS.darkBrown} />
+                  </TouchableOpacity>
+                  {index !== arr.length - 1 && <View style={styles.historyDivider} />}
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
         {membershipStatus === 'vip' && (
           <>
             {/* Welcome back card */}
@@ -172,13 +273,7 @@ export default function HomePage() {
             </View>
 
             {/* Upcoming session */}
-            <View>
-            <LinearGradient
-                  colors={[COLORS.goldLight, COLORS.gold]}
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.vipSessionCard}
-                >
+            <View style={styles.vipSessionCard}>
               <View style={styles.sessionHeader}>
                 <View style={styles.sessionHeaderLeft}>
                   <Ionicons name="calendar-outline" size={18} color={COLORS.darkBrown} />
@@ -190,10 +285,7 @@ export default function HomePage() {
               </View>
 
               <View style={styles.sessionInfoRow}>
-              <Image
-                source={require('@/assets/images/image.png')}
-                style={styles.avatarSmallPlaceholder}
-              />
+                <View style={styles.avatarSmallPlaceholder} />
                 <View>
                   <AppText weight="bold" style={styles.sessionTitle}>Conversational Fluency</AppText>
                   <AppText style={styles.sessionSubtitle}>with Instrutor Damar</AppText>
@@ -203,14 +295,13 @@ export default function HomePage() {
               <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/(app)/session')}>
                 <LinearGradient
                   colors={[COLORS.darkBrown, COLORS.gold]}
-                  start={{ x: 1, y: 0 }}
-                  end={{ x: 0, y: 1 }}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
                   style={styles.primaryButton}
                 >
                   <AppText weight="bold" style={styles.primaryButtonText}>Join Room</AppText>
                 </LinearGradient>
               </TouchableOpacity>
-              </LinearGradient>
             </View>
 
             {/* Session Quota */}
@@ -228,11 +319,7 @@ export default function HomePage() {
             {/* Recent History */}
             <View style={styles.whiteBorderCard}>
               <AppText weight="bold" style={styles.sectionTitle}>Recent History</AppText>
-              {[
-                { title: 'Business English Basics', subtitle: 'with Instructor Sarah • Oct 24' },
-                { title: 'Grammar Workshop', subtitle: 'with Instructor Damar • Oct 22' },
-                { title: 'Grammar Workshop', subtitle: 'with Instructor Damar • Oct 22' },
-              ].map((item, index, arr) => (
+              {REGULAR_HISTORY.map((item, index, arr) => (
                 <View key={index}>
                   <View style={styles.historyRow}>
                     <View>
@@ -275,7 +362,7 @@ const styles = StyleSheet.create({
   timeBadge: { backgroundColor: COLORS.gold, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
   timeBadgeText: { fontSize: 12, color: COLORS.white },
   sessionInfoRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
-  avatarSmallPlaceholder: { width: 40, height: 40, borderRadius: 20 },
+  avatarSmallPlaceholder: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.gold },
   sessionTitle: { fontSize: 15, color: COLORS.darkBrown },
   sessionSubtitle: { fontSize: 13, color: COLORS.placeholder },
   sectionTitle: { fontSize: 18, color: COLORS.darkBrown },
@@ -298,6 +385,16 @@ const styles = StyleSheet.create({
   primaryButton: { borderRadius: 30, paddingVertical: 14, alignItems: 'center', marginTop: 16 },
   primaryButtonText: { color: COLORS.white, fontSize: 15 },
 
+  // "regular" state styles
+  tierCard: { backgroundColor: COLORS.goldLight, borderRadius: 24, padding: 20 },
+  tierHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  tierLabel: { fontSize: 12, color: COLORS.placeholder, letterSpacing: 0.5 },
+  joinVipButton: { borderRadius: 20, paddingHorizontal: 18, paddingVertical: 8 },
+  joinVipButtonText: { color: COLORS.white, fontSize: 13 },
+  tierTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  tierTitle: { fontSize: 22, color: COLORS.darkBrown },
+  tierDesc: { fontSize: 14, color: COLORS.darkBrown, opacity: 0.75, lineHeight: 20 },
+
   // "vip" state styles
   whiteBorderCard: { backgroundColor: COLORS.white, borderRadius: 24, padding: 20, borderWidth: 1, borderColor: COLORS.gold },
   welcomeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -308,7 +405,7 @@ const styles = StyleSheet.create({
   levelLabel: { fontSize: 11, color: COLORS.placeholder },
   levelValue: { fontSize: 15, color: COLORS.darkBrown, marginTop: 2 },
 
-  vipSessionCard: { borderRadius: 24, padding: 20 },
+  vipSessionCard: { backgroundColor: COLORS.peach, borderRadius: 24, padding: 20 },
   peachTimeBadge: { backgroundColor: '#EFCB9C', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
   peachTimeBadgeText: { fontSize: 12, color: COLORS.darkBrown },
 

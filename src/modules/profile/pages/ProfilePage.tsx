@@ -30,7 +30,7 @@ const MENU_GROUPS = [
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { role } = useUserRole();
+  const { role, membershipTier } = useUserRole();
 
   const handleLogout = () => {
     Alert.alert('Log out', 'Are you sure you want to log out?', [
@@ -51,7 +51,8 @@ export default function ProfilePage() {
           style={styles.avatar}
         />
         <AppText weight="bold" style={styles.name}>Nanda Maulana</AppText>
-        <VipBadge label={role === 'host' ? 'HOST' : 'VIP MEMBER'} />
+        {role === 'host' && <VipBadge label="HOST" />}
+        {role === 'member' && membershipTier === 'vip' && <VipBadge label="VIP" />}
 
         {MENU_GROUPS.map((group, groupIndex) => (
           <View key={groupIndex} style={styles.menuCard}>
