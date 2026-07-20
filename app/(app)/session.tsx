@@ -1,5 +1,1 @@
-import PlaceholderPage from '@/src/shared/components/PlaceHolderPage';
-
-export default function SessionPage() {
-  return <PlaceholderPage title="Session" />;
-}
+export { default } from '../../src/modules/session/pages/SessionPage';

@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     borderRadius: 30,
-    paddingVertical: 18,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },

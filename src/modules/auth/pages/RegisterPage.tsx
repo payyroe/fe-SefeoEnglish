@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     borderRadius: 30,
-    paddingVertical: 16,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
