@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image } from 'react-native';
 import AppText from '@/src/shared/components/AppText'; // sesuain path relatif ke file lu
+import { useUserRole } from '@/src/shared/context/UserRoleContext'; // sesuain path relatif ke file lu
 
 // Warna utama sesuai desain SEFEO
 const COLORS = {
@@ -37,12 +38,17 @@ type FormErrors = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setRole } = useUserRole();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+
+  // TODO: hapus toggle ini kalau API login udah bisa nentuin role otomatis.
+  // Ini cuma buat mempermudah development sebelum backend role-nya siap.
+  const [loginAs, setLoginAs] = useState<'member' | 'host'>('member');
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -55,10 +61,13 @@ export default function LoginPage() {
 
   const handleLogin = () => {
     if (!validate()) return;
-  
-    console.log('Login dengan:', { username, password });
-  
-    router.replace('/(app)');
+
+    console.log('Login dengan:', { username, password, loginAs });
+
+    // TODO: ganti dengan hasil role dari response API login yang sebenarnya
+    setRole(loginAs);
+
+    router.replace(loginAs === 'host' ? '/(host)' : '/(app)');
   };
 
   return (
@@ -83,6 +92,26 @@ export default function LoginPage() {
           {/* Heading */}
           <AppText weight="bold" style={styles.title}>Welcome</AppText>
           <AppText weight="bold" style={styles.subtitle}>Sign in to your account</AppText>
+
+          {/* TODO: hapus blok ini kalau API login udah bisa nentuin role otomatis */}
+          <View style={styles.roleToggleRow}>
+            <TouchableOpacity
+              style={[styles.roleToggleButton, loginAs === 'member' && styles.roleToggleButtonActive]}
+              onPress={() => setLoginAs('member')}
+            >
+              <AppText style={[styles.roleToggleText, loginAs === 'member' && styles.roleToggleTextActive]}>
+                Login as Member
+              </AppText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.roleToggleButton, loginAs === 'host' && styles.roleToggleButtonActive]}
+              onPress={() => setLoginAs('host')}
+            >
+              <AppText style={[styles.roleToggleText, loginAs === 'host' && styles.roleToggleTextActive]}>
+                Login as Host
+              </AppText>
+            </TouchableOpacity>
+          </View>
 
           {/* Username */}
           <AppText style={styles.label}>Username</AppText>
@@ -220,6 +249,32 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 28,
   },
+
+  // TODO: hapus style ini juga kalau toggle role udah nggak dipakai
+  roleToggleRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 28,
+  },
+  roleToggleButton: {
+    flex: 1,
+    borderWidth: 1.5,
+    borderColor: COLORS.gold,
+    borderRadius: 20,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  roleToggleButtonActive: {
+    backgroundColor: COLORS.gold,
+  },
+  roleToggleText: {
+    fontSize: 13,
+    color: COLORS.gold,
+  },
+  roleToggleTextActive: {
+    color: COLORS.white,
+  },
+
   label: {
     fontSize: 14,
     color: COLORS.darkBrown,
