@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import AppText from '../../../shared/components/AppText';
 import BottomNav from '../../../shared/components/BottomNav';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
+import { useUserRole } from '../../../shared/context/UserRoleContext';
 
 const COLORS = {
   background: '#FDFAF6',
@@ -40,7 +40,40 @@ const AVAILABLE_SESSIONS = [
   },
 ];
 
+type CommunitySessionAccess = 'locked' | 'waiting-list';
+
+const COMMUNITY_SESSIONS: {
+  id: string;
+  title: string;
+  dateLabel: string;
+  timeLabel: string;
+  access: CommunitySessionAccess;
+  accessLabel: string;
+  note: string;
+}[] = [
+  {
+    id: 'ielts-speaking-masterclass',
+    title: 'Advanced IELTS Speaking Masterclass',
+    dateLabel: 'Tomorrow',
+    timeLabel: '18:00 - 19:30',
+    access: 'locked',
+    accessLabel: 'Invitation Only',
+    note: 'VIP Members only',
+  },
+  {
+    id: 'business-negotiation-essentials',
+    title: 'Business Negotiation Essentials',
+    dateLabel: 'Wed, Oct 25',
+    timeLabel: '10:00 - 11:30',
+    access: 'waiting-list',
+    accessLabel: 'Waiting List',
+    note: 'Waiting List',
+  },
+];
+
 export default function SessionPage() {
+  const router = useRouter();
+  const { membershipTier } = useUserRole();
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
 
@@ -89,67 +122,133 @@ export default function SessionPage() {
               </View>
               <AppText weight="bold" style={styles.historyCardTitle}>{item.title}</AppText>
               <View style={styles.hostRow}>
-              <Image
-                source={require('@/assets/images/image.png')}
-                style={styles.avatarTiny}
-              />
+                <View style={styles.avatarTiny} />
                 <AppText style={styles.hostText}>Host : {item.host}</AppText>
               </View>
             </View>
           ))}
         </ScrollView>
 
-        <AppText weight="bold" style={[styles.sectionTitle, { marginBottom: 16 }]}>Available Sessions</AppText>
-
-        {AVAILABLE_SESSIONS.map((session, index) => (
-          <View key={index} style={styles.sessionCard}>
-            <View style={styles.sessionCardHeader}>
-            <Image
-                source={require('@/assets/images/image.png')}
-                style={styles.avatarPlaceholder}
-              />
-              <View style={{ flex: 1 }}>
-                <AppText weight="bold" style={styles.hostName}>{session.name}</AppText>
-                <AppText style={styles.hostRole}>Host</AppText>
-              </View>
-              <View style={styles.levelBadge}>
-                <AppText style={styles.levelBadgeText}>{session.level}</AppText>
-              </View>
+        {membershipTier === 'regular' ? (
+          <>
+            {/* Note: kenapa regular member nggak bisa langsung book session */}
+            <View style={styles.noteBanner}>
+              <Ionicons name="mail-outline" size={20} color={COLORS.darkBrown} />
+              <AppText style={styles.noteBannerText}>
+                Note: Regular members join sessions exclusively via Admin invitation links sent
+                to your registered email.
+              </AppText>
             </View>
 
-            <AppText weight="bold" style={styles.sessionCardTitle}>{session.title}</AppText>
-            <AppText style={styles.sessionCardDesc}>{session.desc}</AppText>
+            <AppText weight="bold" style={[styles.sectionTitle, { marginBottom: 16 }]}>Community Sesions</AppText>
 
-            <View style={styles.divider} />
+            {COMMUNITY_SESSIONS.map((session, index) => (
+              <View key={index} style={styles.communityCard}>
+                <View style={styles.communityImagePlaceholder}>
+                  <View style={styles.communityAccessBadge}>
+                    <Ionicons
+                      name={session.access === 'locked' ? 'lock-closed' : 'people'}
+                      size={13}
+                      color={session.access === 'locked' ? COLORS.error : COLORS.darkBrown}
+                    />
+                    <AppText
+                      style={[
+                        styles.communityAccessText,
+                        session.access === 'locked' && { color: COLORS.error },
+                      ]}
+                    >
+                      {session.accessLabel}
+                    </AppText>
+                  </View>
+                </View>
 
-            <View style={styles.metaRow}>
-              <View style={styles.metaItem}>
-                <Ionicons name="time-outline" size={16} color={COLORS.darkBrown} />
-                <AppText style={styles.metaText}>{session.duration}</AppText>
+                <View style={styles.communityBody}>
+                  <AppText weight="bold" style={styles.communityTitle}>{session.title}</AppText>
+
+                  <View style={styles.communityMetaRow}>
+                    <View style={styles.metaItem}>
+                      <Ionicons name="calendar-outline" size={15} color={COLORS.darkBrown} />
+                      <AppText style={styles.metaText}>{session.dateLabel}</AppText>
+                    </View>
+                    <View style={styles.metaItem}>
+                      <Ionicons name="time-outline" size={15} color={COLORS.darkBrown} />
+                      <AppText style={styles.metaText}>{session.timeLabel}</AppText>
+                    </View>
+                  </View>
+
+                  {session.access === 'locked' && (
+                    <AppText style={styles.vipOnlyText}>{session.note}</AppText>
+                  )}
+
+                  <View style={styles.communityButtonRow}>
+                    <TouchableOpacity
+                      style={styles.viewDetailsButton}
+                      activeOpacity={0.85}
+                      onPress={() => router.push(`/(app)/session-details/${session.id}`)}
+                    >
+                      <AppText weight="bold" style={styles.viewDetailsText}>View Details</AppText>
+                    </TouchableOpacity>
+
+                    {session.access === 'locked' ? (
+                      <View style={styles.lockedButton}>
+                        <Ionicons name="lock-closed" size={14} color={COLORS.white} />
+                        <AppText weight="bold" style={styles.lockedButtonText}>Locked</AppText>
+                      </View>
+                    ) : (
+                      <TouchableOpacity style={styles.waitingListButton} activeOpacity={0.85}>
+                        <AppText weight="bold" style={styles.waitingListText}>Join Waiting List</AppText>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
               </View>
-              <View style={styles.metaItem}>
-                <Ionicons name="calendar-outline" size={16} color={COLORS.darkBrown} />
-                <AppText style={styles.metaText}>{session.date}</AppText>
+            ))}
+          </>
+        ) : (
+          <>
+            <AppText weight="bold" style={[styles.sectionTitle, { marginBottom: 16 }]}>Available Sessions</AppText>
+
+            {AVAILABLE_SESSIONS.map((session, index) => (
+              <View key={index} style={styles.sessionCard}>
+                <View style={styles.sessionCardHeader}>
+                  <View style={styles.avatarPlaceholder} />
+                  <View style={{ flex: 1 }}>
+                    <AppText weight="bold" style={styles.hostName}>{session.name}</AppText>
+                    <AppText style={styles.hostRole}>Host</AppText>
+                  </View>
+                  <View style={styles.levelBadge}>
+                    <AppText style={styles.levelBadgeText}>{session.level}</AppText>
+                  </View>
+                </View>
+
+                <AppText weight="bold" style={styles.sessionCardTitle}>{session.title}</AppText>
+                <AppText style={styles.sessionCardDesc}>{session.desc}</AppText>
+
+                <View style={styles.divider} />
+
+                <View style={styles.metaRow}>
+                  <View style={styles.metaItem}>
+                    <Ionicons name="time-outline" size={16} color={COLORS.darkBrown} />
+                    <AppText style={styles.metaText}>{session.duration}</AppText>
+                  </View>
+                  <View style={styles.metaItem}>
+                    <Ionicons name="calendar-outline" size={16} color={COLORS.darkBrown} />
+                    <AppText style={styles.metaText}>{session.date}</AppText>
+                  </View>
+                </View>
+
+                <View style={styles.seatsRow}>
+                  <Ionicons name="people" size={16} color={COLORS.error} />
+                  <AppText style={styles.seatsText}>{session.seats} Seats left</AppText>
+                </View>
+
+                <TouchableOpacity style={styles.bookButton} activeOpacity={0.85}>
+                  <AppText weight="bold" style={styles.bookButtonText}>Book Now</AppText>
+                </TouchableOpacity>
               </View>
-            </View>
-
-            <View style={styles.seatsRow}>
-              <Ionicons name="people" size={16} color={COLORS.error} />
-              <AppText style={styles.seatsText}>{session.seats} Seats left</AppText>
-            </View>
-
-            <TouchableOpacity activeOpacity={0.85}>
-            <LinearGradient
-            colors={[COLORS.darkBrown, COLORS.gold]}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.bookButton}
-            >
-              <AppText weight="bold" style={styles.bookButtonText}>Book Now</AppText>
-            </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        ))}
+            ))}
+          </>
+        )}
       </ScrollView>
 
       <BottomNav />
@@ -190,6 +289,52 @@ const styles = StyleSheet.create({
   avatarTiny: { width: 20, height: 20, borderRadius: 10, backgroundColor: COLORS.gold },
   hostText: { fontSize: 12, color: COLORS.placeholder },
 
+  // Regular member: note banner
+  noteBanner: {
+    flexDirection: 'row', gap: 12, backgroundColor: COLORS.goldLight,
+    borderRadius: 18, padding: 16, marginBottom: 24,
+  },
+  noteBannerText: { flex: 1, fontSize: 13, color: COLORS.darkBrown, lineHeight: 19 },
+
+  // Regular member: community sessions
+  communityCard: {
+    backgroundColor: COLORS.white, borderRadius: 24, borderWidth: 1, borderColor: COLORS.border,
+    overflow: 'hidden', marginBottom: 16,
+  },
+  communityImagePlaceholder: {
+    height: 140, backgroundColor: '#B9A487', justifyContent: 'flex-start', alignItems: 'flex-end', padding: 14,
+  },
+  communityAccessBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    backgroundColor: COLORS.white, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6,
+  },
+  communityAccessText: { fontSize: 12, color: COLORS.darkBrown },
+
+  communityBody: { padding: 18 },
+  communityTitle: { fontSize: 17, color: COLORS.darkBrown, marginBottom: 10 },
+  communityMetaRow: { flexDirection: 'row', gap: 20, marginBottom: 10 },
+  vipOnlyText: { fontSize: 13, color: COLORS.darkBrown, opacity: 0.7, marginBottom: 16 },
+
+  communityButtonRow: { flexDirection: 'row', gap: 12, marginTop: 6 },
+  viewDetailsButton: {
+    flex: 1, borderWidth: 1.5, borderColor: COLORS.gold, borderRadius: 24,
+    paddingVertical: 13, alignItems: 'center',
+  },
+  viewDetailsText: { fontSize: 13, color: COLORS.gold },
+
+  lockedButton: {
+    flex: 1, flexDirection: 'row', gap: 6, backgroundColor: COLORS.gold, borderRadius: 24,
+    paddingVertical: 13, alignItems: 'center', justifyContent: 'center',
+  },
+  lockedButtonText: { fontSize: 13, color: COLORS.white },
+
+  waitingListButton: {
+    flex: 1, backgroundColor: COLORS.gold, borderRadius: 24,
+    paddingVertical: 13, alignItems: 'center',
+  },
+  waitingListText: { fontSize: 13, color: COLORS.white },
+
+  // VIP: available sessions (existing)
   sessionCard: { backgroundColor: COLORS.white, borderRadius: 24, padding: 20, borderWidth: 1, borderColor: COLORS.border, marginBottom: 16 },
   sessionCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
   avatarPlaceholder: { width: 48, height: 48, borderRadius: 24, backgroundColor: COLORS.gold },
